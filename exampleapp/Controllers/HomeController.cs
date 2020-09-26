@@ -1,16 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
+using exampleapp.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace exampleapp.Controllers
 {
     public class HomeController : Controller
     {
+        private IRepository repository;
+        private string message;
+
+        public HomeController(IRepository repo, IConfiguration config)
+        {
+            repository = repo;
+            message = config["MESSAGE"] ?? "Essential Docker";
+        }
         public IActionResult Index()
         {
-            return View();
+            ViewBag.Message = message;
+            return View(repository.Products);
         }
 
         public IActionResult About()
