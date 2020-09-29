@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using exampleapp.Models;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace exampleapp
 {
@@ -24,8 +26,15 @@ namespace exampleapp
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var host = Configuration["DBHOST"] ?? "localhost";
+            var port = Configuration["DBPORT"] ?? "3306";
+            var password = Configuration["DBPASSWORD"] ?? "";
+            services.AddDbContext<ProductDbContext>(options =>
+                options.UseMySql($"server={host};userid=root;pwd={password};"
+                    + $"port={port};database=products"));
+
             services.AddSingleton<IConfiguration>(Configuration);
-            services.AddTransient<IRepository, DummyRepository>();
+            services.AddTransient<IRepository, ProductRepository>();
             services.AddMvc();
         }
         public void Configure(IApplicationBuilder app,
@@ -36,6 +45,8 @@ namespace exampleapp
             app.UseStatusCodePages();
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
+
+            SeedData.EnsurePopulated(app);
         }
     }
 }
