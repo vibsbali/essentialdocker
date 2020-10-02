@@ -46,7 +46,10 @@ namespace exampleapp
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
 
-            //SeedData.EnsurePopulated(app);
+            if (env.IsDevelopment())
+            {
+                SeedData.EnsurePopulated(app);
+            }
         }
     }
 }
